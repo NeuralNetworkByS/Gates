@@ -13,11 +13,14 @@ namespace Gates.service
     {
         private ActivatonFunctions activatonFunctions = new ActivatonFunctions();
 
-        private List<PointInfo> list0 = new List<PointInfo>();
-        private List<PointInfo> list1 = new List<PointInfo>();
+        private List<PointInfo> list0;
+        private List<PointInfo> list1;
 
         public void showChart(TrainingResult trainingResult, TrainingSetings trainSettings)
         {
+            list0 = new List<PointInfo>();
+            list1 = new List<PointInfo>();
+
             preparePointList(trainingResult, trainSettings);
 
             float[,] table0 = changeListToArray(list0);
@@ -29,12 +32,16 @@ namespace Gates.service
 
         public void preparePointList(TrainingResult trainingResult, TrainingSetings trainSettings)
         {
-           
-            for (int x = -100; x <= 100; x++)
+
+            float x1 = 0.01f;
+            float x2 = 0.01f;
+
+            for (int x = 0; x <= 100; x++)
             {
-                for (int y = -100; y <= 100; y++)
+                x2 = 0.01f;
+                for (int y = 0; y <= 100; y++)
                 {
-                    PointInfo point = preparePoint(trainingResult, x, y, trainSettings.activiationFunction);
+                    PointInfo point = preparePoint(trainingResult, x1, x2, trainSettings.activiationFunction);
 
                     if (point.color == 0.00f)
                     {
@@ -44,21 +51,25 @@ namespace Gates.service
                     {
                         list1.Add(point);
                     }
+
+                    x2 += 0.01f;
                 }
+
+                x1 += 0.01f;
             }
         }
 
-        public PointInfo preparePoint(TrainingResult trainingResult, int x, int y, TrainingSetings.ActiviationFunction activiationFunction)
+        public PointInfo preparePoint(TrainingResult trainingResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)
         {
 
-            float e = ((float)x) * trainingResult.w1 + ((float)y) * trainingResult.w1 + trainingResult.bias;
+            float e = (x) * trainingResult.w1 + (y) * trainingResult.w1 + trainingResult.bias;
             float result = 0.00f;
 
             if (activiationFunction == TrainingSetings.ActiviationFunction.JUMP)
             {
                 result = activatonFunctions.jumpActivationFuntion(e);
             }
-            else
+            //else
             {
                 result = activatonFunctions.sigmoidActivationFunction(e);
             }

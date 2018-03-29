@@ -133,6 +133,23 @@ namespace Gates.service
 
             List<float> desireResults = valuesContainer.results[trainingSetings.gateType.ToString()];
 
+            if (desireResults == null)
+            {
+                Debug.WriteLine("DesireResults jest nullem");
+            }
+            else
+            {
+                Debug.WriteLine("desireResults");
+                foreach (float result in desireResults)
+                {
+                    Debug.WriteLine(result);
+                }
+            }
+
+            Debug.WriteLine("Typ bramki do szkolenia: " + trainingSetings.gateType);
+            Debug.WriteLine("Funkcja aktywacyjna: " + trainingSetings.activiationFunction);
+
+
             int epochs = 0;
             while (isWeightChanged)
             {
@@ -161,6 +178,7 @@ namespace Gates.service
                         isWeightChanged = true;
                     }
                 }
+
             }
 
             
