@@ -41,7 +41,7 @@ namespace Gates.service
                 x2 = 0.01f;
                 for (int y = 0; y <= 100; y++)
                 {
-                    PointInfo point = preparePoint(trainingResult, x, y, trainSettings.activiationFunction);
+                    PointInfo point = preparePoint(trainingResult, x1, x2, trainSettings.activiationFunction);
 
                     if (point.color == 0.00f)
                     {
@@ -59,14 +59,13 @@ namespace Gates.service
             }
         }
 
-        public PointInfo preparePoint(TrainingResult trainingResult, int x, int y, TrainingSetings.ActiviationFunction activiationFunction)
+        public PointInfo preparePoint(TrainingResult trainingResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)
         {
 
-            float e = ((float)x) * trainingResult.w1 + ((float)y) * trainingResult.w1 + trainingResult.bias;
+            float e = x * trainingResult.w1 + y * trainingResult.w1 + trainingResult.bias;
             float result = 0.00f;
 
-            
-
+           
             if (activiationFunction == TrainingSetings.ActiviationFunction.JUMP)
             {
                 result = activatonFunctions.jumpActivationFuntion(e);
