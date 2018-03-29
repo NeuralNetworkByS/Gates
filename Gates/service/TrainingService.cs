@@ -181,8 +181,6 @@ namespace Gates.service
 
             }
 
-            
-
             trainingResult.w1 = w1;
             trainingResult.w2 = w2;
             trainingResult.bias = bias;
@@ -195,11 +193,8 @@ namespace Gates.service
 
         private void trainByTwoNeurons(ActivatonFunctions.Del activationFuncation)
         {
-
             firstLineBuilder.Append(" dwa neurony.");
             throw new NotImplementedException("Not implemented");
-
-
         }
 
         
