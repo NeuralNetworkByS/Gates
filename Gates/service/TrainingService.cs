@@ -25,6 +25,7 @@ namespace Gates.service
         {
             this.trainingSetings = settings;
             this.valuesContainer = valuesContainer;
+            activationFunctions.maxError = trainingSetings.maxError;
             firstLineBuilder = new StringBuilder();
             firstLineBuilder.Append("Trenowanie: ");
             firstLineBuilder.Append(" bramka: " + trainingSetings.gateType.ToString() + ", ");

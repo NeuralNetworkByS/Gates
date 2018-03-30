@@ -20,6 +20,7 @@ namespace Gates.service
         {
             list0 = new List<PointInfo>();
             list1 = new List<PointInfo>();
+            activatonFunctions.maxError = trainSettings.maxError;
 
             preparePointList(trainingResult, trainSettings);
 

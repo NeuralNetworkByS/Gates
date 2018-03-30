@@ -17,5 +17,6 @@ namespace Gates.config
         public NeuronsNumbers neuronsNumbers;
 
         public float learningRate;
+        public float maxError;
     }
 }

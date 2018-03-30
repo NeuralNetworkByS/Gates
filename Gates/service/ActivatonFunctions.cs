@@ -10,6 +10,7 @@ namespace Gates.service
     {
 
         public delegate float Del(float x);
+        public float maxError = 0.00f;
 
         public float jumpActivationFuntion(float x)
         {
@@ -27,9 +28,16 @@ namespace Gates.service
         {
             float result = 1.00f / (1.00f + ((float)Math.Pow(Math.E, -x)));
 
+            float errorUp = 1.00f - result;
 
-            if (result > 0.98f) result = 1.00f;
-            else if (result > 0.01) result = 0.00f;
+            if (result <= maxError)
+            {
+                result = 0.00f;
+            }
+            else if (errorUp <= maxError)
+            {
+                result = 1.00f;
+            }
 
             return result;
         }
