@@ -48,6 +48,8 @@
             this.TrainingLogLB = new System.Windows.Forms.ListBox();
             this.TrainingStartButton = new System.Windows.Forms.Button();
             this.ChartButton = new System.Windows.Forms.Button();
+            this.MaxErrorTB = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GateTrainingValuesView)).BeginInit();
             this.DataTraningView.SuspendLayout();
@@ -131,6 +133,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.MaxErrorTB);
+            this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.SigmoidFunctionRB);
             this.groupBox2.Controls.Add(this.JumpFunctionRB);
             this.groupBox2.Location = new System.Drawing.Point(12, 146);
@@ -277,6 +281,23 @@
             this.ChartButton.UseVisualStyleBackColor = true;
             this.ChartButton.Click += new System.EventHandler(this.ChartButton_Click);
             // 
+            // MaxErrorTB
+            // 
+            this.MaxErrorTB.Location = new System.Drawing.Point(58, 102);
+            this.MaxErrorTB.Name = "MaxErrorTB";
+            this.MaxErrorTB.Size = new System.Drawing.Size(74, 22);
+            this.MaxErrorTB.TabIndex = 3;
+            this.MaxErrorTB.Text = "0.02";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(13, 105);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(39, 17);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "error";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -330,6 +351,8 @@
         private System.Windows.Forms.Button TrainingStartButton;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button ChartButton;
+        private System.Windows.Forms.TextBox MaxErrorTB;
+        private System.Windows.Forms.Label label2;
     }
 }
 

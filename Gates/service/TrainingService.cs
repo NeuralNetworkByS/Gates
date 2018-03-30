@@ -25,6 +25,7 @@ namespace Gates.service
         {
             this.trainingSetings = settings;
             this.valuesContainer = valuesContainer;
+            activationFunctions.maxError = trainingSetings.maxError;
             firstLineBuilder = new StringBuilder();
             firstLineBuilder.Append("Trenowanie: ");
             firstLineBuilder.Append(" bramka: " + trainingSetings.gateType.ToString() + ", ");
@@ -181,8 +182,6 @@ namespace Gates.service
 
             }
 
-            
-
             trainingResult.w1 = w1;
             trainingResult.w2 = w2;
             trainingResult.bias = bias;
@@ -195,11 +194,8 @@ namespace Gates.service
 
         private void trainByTwoNeurons(ActivatonFunctions.Del activationFuncation)
         {
-
             firstLineBuilder.Append(" dwa neurony.");
             throw new NotImplementedException("Not implemented");
-
-
         }
 
         

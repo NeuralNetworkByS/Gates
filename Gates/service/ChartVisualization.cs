@@ -20,6 +20,7 @@ namespace Gates.service
         {
             list0 = new List<PointInfo>();
             list1 = new List<PointInfo>();
+            activatonFunctions.maxError = trainSettings.maxError;
 
             preparePointList(trainingResult, trainSettings);
 
@@ -62,14 +63,15 @@ namespace Gates.service
         public PointInfo preparePoint(TrainingResult trainingResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)
         {
 
-            float e = (x) * trainingResult.w1 + (y) * trainingResult.w1 + trainingResult.bias;
+            float e = x * trainingResult.w1 + y * trainingResult.w1 + trainingResult.bias;
             float result = 0.00f;
 
+           
             if (activiationFunction == TrainingSetings.ActiviationFunction.JUMP)
             {
                 result = activatonFunctions.jumpActivationFuntion(e);
             }
-            //else
+            else
             {
                 result = activatonFunctions.sigmoidActivationFunction(e);
             }

@@ -167,6 +167,7 @@ namespace Gates
             try
             {
                 trainingSetings.learningRate = float.Parse(LearningRateTB.Text, CultureInfo.InvariantCulture);
+                trainingSetings.maxError = float.Parse(MaxErrorTB.Text, CultureInfo.InvariantCulture);
                 trainingResult = trainingService.train(trainingSetings, gateTrValuesContainer);
                 showTrainingRaport(trainingResult.raport);
             }
