@@ -102,5 +102,10 @@ namespace Gates.form
             }
 
         }
+
+        private void ChartForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
