@@ -22,7 +22,7 @@ namespace Gates
         private TrainingService trainingService = new TrainingService();
 
         private TrainingSetings trainingSetings = new TrainingSetings();
-        private TrainingResult trainingResult;
+        private TrainingResultP trainingResult;
         private ChartVisualization chartVisualization = new ChartVisualization();
 
         public Form1()

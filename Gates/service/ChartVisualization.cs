@@ -16,7 +16,7 @@ namespace Gates.service
         private List<PointInfo> list0;
         private List<PointInfo> list1;
 
-        public void showChart(TrainingResult trainingResult, TrainingSetings trainSettings)
+        public void showChart(TrainingResultP trainingResult, TrainingSetings trainSettings)
         {
             list0 = new List<PointInfo>();
             list1 = new List<PointInfo>();
@@ -31,7 +31,7 @@ namespace Gates.service
             chartForm.Show();
         }
 
-        public void preparePointList(TrainingResult trainingResult, TrainingSetings trainSettings)
+        public void preparePointList(TrainingResultP trainingResult, TrainingSetings trainSettings)
         {
 
             float x1 = 0.01f;
@@ -60,10 +60,10 @@ namespace Gates.service
             }
         }
 
-        public PointInfo preparePoint(TrainingResult trainingResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)
+        public PointInfo preparePoint(TrainingResultP trainingResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)
         {
 
-            float e = x * trainingResult.w1 + y * trainingResult.w1 + trainingResult.bias;
+            float e = x * trainingResult.w1 + y * trainingResult.w1 + trainingResult.biasI;
             float result = 0.00f;
 
            

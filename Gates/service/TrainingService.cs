@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Gates.service
 {
@@ -16,12 +17,12 @@ namespace Gates.service
         private GateTrainingValuesContainer valuesContainer;
 
         private StringBuilder firstLineBuilder;
-        private TrainingResult trainingResult;
+        private TrainingResultP trainingResult;
 
         private ActivatonFunctions activationFunctions = new ActivatonFunctions();
 
 
-        public TrainingResult train(TrainingSetings settings, GateTrainingValuesContainer valuesContainer)
+        public TrainingResultP train(TrainingSetings settings, GateTrainingValuesContainer valuesContainer)
         {
             this.trainingSetings = settings;
             this.valuesContainer = valuesContainer;
@@ -85,12 +86,7 @@ namespace Gates.service
 
         private void trainByJumpFunctionAndTwoNeuron()
         {
-            if (trainingSetings.gateType != TrainingSetings.GateType.XOR)
-            {
-                throw new NotImplementedException("Funkcja dwóch neuronó tylko dla XOR");
-            }
-
-            throw new NotImplementedException("Not implemented");
+            trainByTwoNeurons(activationFunctions.jumpActivationFuntion);
         }
 
         private void trainBySigmoidFunctionAndOneNeuron()
@@ -100,10 +96,7 @@ namespace Gates.service
 
         private void trainBySigmoidFunctionAndTwoNeuron()
         {
-            if (trainingSetings.gateType != TrainingSetings.GateType.XOR)
-            {
-                throw new NotImplementedException("Funkcja dwóch neuronów tylko dla XOR");
-            }
+            trainByTwoNeurons(activationFunctions.sigmoidActivationFunction);
         }
 
         private void trainByOneNeuron(ActivatonFunctions.Del activationFunction)
@@ -113,7 +106,7 @@ namespace Gates.service
                 throw new NotImplementedException("Brak możliwości trenowanie XOR jednym nuronem");
             }
 
-            trainingResult = new TrainingResult();
+            trainingResult = new TrainingResultP();
             firstLineBuilder.Append(" pojedynczy neuron.");
 
             trainingResult.raport.Add(firstLineBuilder.ToString());
@@ -184,7 +177,7 @@ namespace Gates.service
 
             trainingResult.w1 = w1;
             trainingResult.w2 = w2;
-            trainingResult.bias = bias;
+            trainingResult.biasI = bias;
 
             trainingResult.raport.Add("Finalne w1: " + w1);
             trainingResult.raport.Add("Finalene w2: " + w2);
@@ -195,7 +188,73 @@ namespace Gates.service
         private void trainByTwoNeurons(ActivatonFunctions.Del activationFuncation)
         {
             firstLineBuilder.Append(" dwa neurony.");
-            throw new NotImplementedException("Not implemented");
+            //throw new NotImplementedException("Not implemented");
+
+            if (trainingSetings.gateType != TrainingSetings.GateType.XOR)
+            {
+                throw new NotImplementedException("Brak możliwość trenowania z wykorzystaniem 2 neuronów tylko bramki xor");
+            }
+
+            TrainingResultMP trainingResult = new TrainingResultMP();
+            trainingResult.initialize();
+
+            bool isChanged = true;
+
+            float gradientOutput = 0.00f;
+            float gradientH1 = 0.00f;
+            float gradientH2 = 0.00f;
+            float output = 0.00f;
+
+            while (isChanged)
+            {
+                isChanged = false;
+
+                for (int i = 0; i < valuesContainer.results.Count; i++)
+                {
+                    Debug.WriteLine("x1: {0}, x2: {1}, d: {2}", valuesContainer.x1Values[i], valuesContainer.x2Values[i], valuesContainer.results[trainingSetings.gateType.ToString()][i]);
+
+                    trainingResult.h1 =
+                    activationFuncation(trainingResult.w1 * valuesContainer.x1Values[i] + trainingResult.w3 * valuesContainer.x2Values[i] + trainingResult.biasI);
+
+                    trainingResult.h2 =
+                    activationFuncation(trainingResult.w2 * valuesContainer.x1Values[i] + trainingResult.w4 * valuesContainer.x2Values[i] + trainingResult.biasI2);
+
+                    output = trainingResult.h1 * trainingResult.wh1 + trainingResult.h2 * trainingResult.wh2 + trainingResult.biasO;
+                    Debug.WriteLine("Output przed aktywacją: " + output);
+                    output = activationFuncation(output);
+                    Debug.WriteLine("Output po aktywacji: " + output);
+
+                    Debug.WriteLine("Oczekiwana wartość: " + valuesContainer.results[trainingSetings.gateType.ToString()][i]);
+
+
+                    if (output != valuesContainer.results[trainingSetings.gateType.ToString()][i])
+                    {
+                        isChanged = true;
+
+                        gradientOutput = (valuesContainer.results[trainingSetings.gateType.ToString()][i] - output) * output * (1.00f - output);
+                        gradientH1 = trainingResult.h1 * (1.00f - trainingResult.h1);
+                        gradientH2 = trainingResult.h2 * (1.00f - trainingResult.h2);
+
+                        trainingResult.biasO += trainingSetings.learningRate * gradientOutput;
+                        trainingResult.wh1 += trainingSetings.learningRate * gradientOutput * trainingResult.h1;
+                        trainingResult.wh2 += trainingSetings.learningRate * gradientOutput * trainingResult.h2;
+
+                        trainingResult.biasI += trainingSetings.learningRate * gradientH1;
+                        trainingResult.w1 += trainingSetings.learningRate * gradientH1 * valuesContainer.x1Values[i];
+                        trainingResult.w3 += trainingSetings.learningRate * gradientH1 * valuesContainer.x1Values[i];
+
+                        trainingResult.biasI2 += trainingSetings.learningRate * gradientH2;
+                        trainingResult.w2 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
+                        trainingResult.w4 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
+                    }
+
+                }
+
+                
+            }
+
+            Debug.WriteLine("Trening Zakończony");
+
         }
 
         
