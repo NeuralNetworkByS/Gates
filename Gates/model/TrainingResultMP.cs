@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Gates.model
 {
-    class TrainingResultMP : TrainingResultP
+    class TrainingResultMP : TrainingResultP, ITrainingClass
     {
         
         public float w3 = 0.00f;

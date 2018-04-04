@@ -211,6 +211,7 @@ namespace Gates.service
 
                 for (int i = 0; i < valuesContainer.results.Count; i++)
                 {
+                    Debug.WriteLine("");
                     Debug.WriteLine("x1: {0}, x2: {1}, d: {2}", valuesContainer.x1Values[i], valuesContainer.x2Values[i], valuesContainer.results[trainingSetings.gateType.ToString()][i]);
 
                     trainingResult.h1 =
@@ -229,13 +230,16 @@ namespace Gates.service
 
                     if (output != valuesContainer.results[trainingSetings.gateType.ToString()][i])
                     {
+                        Debug.WriteLine("Zmiana wag itp");
                         isChanged = true;
 
-                        gradientOutput = (valuesContainer.results[trainingSetings.gateType.ToString()][i] - output) * output * (1.00f - output);
-                        gradientH1 = trainingResult.h1 * (1.00f - trainingResult.h1);
-                        gradientH2 = trainingResult.h2 * (1.00f - trainingResult.h2);
+                        gradientOutput = (valuesContainer.results[trainingSetings.gateType.ToString()][i] - output);
+                        Debug.WriteLine("gradientOtput: " + gradientOutput);
+                        gradientH1 = gradientOutput * trainingResult.wh1;
+                        gradientH2 = gradientOutput * trainingResult.wh2;
 
                         trainingResult.biasO += trainingSetings.learningRate * gradientOutput;
+                        Debug.WriteLine("trainingSetings.learningRate * gradientOutput: " + trainingSetings.learningRate * gradientOutput);
                         trainingResult.wh1 += trainingSetings.learningRate * gradientOutput * trainingResult.h1;
                         trainingResult.wh2 += trainingSetings.learningRate * gradientOutput * trainingResult.h2;
 
@@ -246,6 +250,20 @@ namespace Gates.service
                         trainingResult.biasI2 += trainingSetings.learningRate * gradientH2;
                         trainingResult.w2 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
                         trainingResult.w4 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
+
+                        Debug.WriteLine("biasO: " + trainingResult.biasO);
+                        Debug.WriteLine("wh1: " + trainingResult.wh1);
+                        Debug.WriteLine("wh2: " + trainingResult.wh2);
+
+                        Debug.WriteLine("biasI: " + trainingResult.biasI);
+                        Debug.WriteLine("w1: " + trainingResult.w1);
+                        Debug.WriteLine("w2: " + trainingResult.w2);
+
+                        Debug.WriteLine("biasI2: " + trainingResult.biasI2);
+                        Debug.WriteLine("w2: " + trainingResult.w2);
+                        Debug.WriteLine("w4: " + trainingResult.w4);
+
+
                     }
 
                 }
