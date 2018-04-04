@@ -63,7 +63,6 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="ILNumerics_deploy\ILNHelper.cs" />
-    <Compile Include="model\ITrainingClass.cs" />
     <Compile Include="model\PointInfo.cs" />
     <Compile Include="model\TrainingResult.cs" />
     <Compile Include="model\TrainingResultMP.cs" />

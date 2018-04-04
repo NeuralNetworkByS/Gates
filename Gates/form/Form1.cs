@@ -23,6 +23,7 @@ namespace Gates
 
         private TrainingSetings trainingSetings = new TrainingSetings();
         private TrainingResultP trainingResult;
+        private TrainingResultMP trainingResultMP;
         private ChartVisualization chartVisualization = new ChartVisualization();
 
         public Form1()
@@ -168,8 +169,19 @@ namespace Gates
             {
                 trainingSetings.learningRate = float.Parse(LearningRateTB.Text, CultureInfo.InvariantCulture);
                 trainingSetings.maxError = float.Parse(MaxErrorTB.Text, CultureInfo.InvariantCulture);
-                trainingResult = trainingService.train(trainingSetings, gateTrValuesContainer);
-                showTrainingRaport(trainingResult.raport);
+
+                if (trainingSetings.gateType == TrainingSetings.GateType.XOR)
+                {
+                    trainingResultMP = trainingService.trainXOR(trainingSetings, gateTrValuesContainer);
+                    showTrainingRaport(trainingResultMP.raport);
+                }
+                else
+                {
+                    trainingResult = trainingService.train(trainingSetings, gateTrValuesContainer);
+                    showTrainingRaport(trainingResult.raport);
+                }
+
+                
             }
             catch (NotImplementedException exception)
             {
