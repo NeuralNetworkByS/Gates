@@ -74,6 +74,7 @@ namespace Gates.service
             else
             {
                 result = activatonFunctions.sigmoidActivationFunction(e);
+                result = activatonFunctions.correctionForSigmoid(result);
             }
 
             return new PointInfo(x, y, result);
