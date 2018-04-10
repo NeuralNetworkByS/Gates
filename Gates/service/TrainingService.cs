@@ -288,10 +288,10 @@ namespace Gates.service
                         Debug.WriteLine("Zmiana wag itp");
                         isChanged = true;
 
-                        gradientOutput = (valuesContainer.results[trainingSetings.gateType.ToString()][i] - output) * output * (1 - output);
+                        gradientOutput = (valuesContainer.results[trainingSetings.gateType.ToString()][i] - output) * output * (1.00f - output);
                         Debug.WriteLine("gradientOtput: " + gradientOutput);
-                        gradientH1 = gradientOutput * tResultMP.wh1 * tResultMP.h1 * (1 - tResultMP.h1);
-                        gradientH2 = gradientOutput * tResultMP.wh2 * tResultMP.h2 * (1 - tResultMP.h2);
+                        gradientH1 = gradientOutput * tResultMP.wh1 * tResultMP.h1 * (1.00f - tResultMP.h1);
+                        gradientH2 = gradientOutput * tResultMP.wh2 * tResultMP.h2 * (1.00f - tResultMP.h2);
 
                         tResultMP.biasO += trainingSetings.learningRate * gradientOutput;
                         Debug.WriteLine("trainingSetings.learningRate * gradientOutput: " + trainingSetings.learningRate * gradientOutput);

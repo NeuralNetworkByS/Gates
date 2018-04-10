@@ -210,7 +210,15 @@ namespace Gates
 
         private void ChartButton_Click(object sender, EventArgs e)
         {
-            chartVisualization.showChart(trainingResult, trainingSetings);
+            if (trainingSetings.gateType == TrainingSetings.GateType.XOR)
+            {
+                chartVisualization.showChartForXor(trainingResultMP, trainingSetings);
+            }
+            else
+            {
+                chartVisualization.showChart(trainingResult, trainingSetings);
+            }
+            
         }
     }
 }
