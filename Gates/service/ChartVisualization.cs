@@ -31,13 +31,13 @@ namespace Gates.service
             chartForm.Show();
         }
 
-        public void showChartForXor(TrainingResultMP tResultMP, TrainingSetings trainSettings)
+        public void showChartForXor(XorTrResult xorTrResult, TrainingSetings trainSettings)
         {
             list0 = new List<PointInfo>();
             list1 = new List<PointInfo>();
             activatonFunctions.maxError = trainSettings.maxError;
 
-            preparePointListForXor(tResultMP, trainSettings.activiationFunction);
+            preparePointListForXor(xorTrResult, trainSettings.activiationFunction);
 
             float[,] table0 = changeListToArray(list0);
             float[,] table1 = changeListToArray(list1);
@@ -46,7 +46,7 @@ namespace Gates.service
             chartForm.Show();
         }
 
-        public void preparePointListForXor(TrainingResultMP trainingResult, TrainingSetings.ActiviationFunction activationFunction)
+        public void preparePointListForXor(XorTrResult xorTrResult, TrainingSetings.ActiviationFunction activationFunction)
         {
 
             float x1 = 0.01f;
@@ -58,7 +58,8 @@ namespace Gates.service
                 for (int y = 0; y <= 100; y++)
                 {
 
-                    PointInfo point = preparePointForXor(trainingResult, x1, x2, activationFunction);
+                    PointInfo point = preparePointForXor(xorTrResult, x1, x2, activationFunction);
+                    point.color = activatonFunctions.correctionForSigmoid(point.color);
 
                     if (point.color == 0.00f)
                     {
@@ -106,39 +107,14 @@ namespace Gates.service
             }
         }
 
-        public PointInfo preparePointForXor(TrainingResultMP trainingResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)
+        public PointInfo preparePointForXor(XorTrResult xorTrResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)
         {
+            xorTrResult.hNeuron1.inputs = new float[] { x, y };
+            xorTrResult.hNeuron2.inputs = new float[] { x, y };
 
-            float h1 = x * trainingResult.w1 + y + trainingResult.w3 + trainingResult.biasI;
-            float h2 = x * trainingResult.w2 + y + trainingResult.w4 + trainingResult.biasI2;
+            xorTrResult.oNeuron.inputs = new float[] { xorTrResult.hNeuron1.output(), xorTrResult.hNeuron2.output() };
 
-            if (activiationFunction == TrainingSetings.ActiviationFunction.JUMP)
-            {
-                h1 = activatonFunctions.jumpActivationFuntion(h1);
-                h2 = activatonFunctions.jumpActivationFuntion(h2);
-            }
-            else
-            {
-                h1 = activatonFunctions.sigmoidActivationFunction(h1);
-                h1 = activatonFunctions.correctionForSigmoid(h1);
-                h2 = activatonFunctions.sigmoidActivationFunction(h2);
-                h2 = activatonFunctions.correctionForSigmoid(h2);
-            }
-
-            float result = h1 * trainingResult.wh1 + h2 * trainingResult.wh2 + trainingResult.biasO;
-
-
-            if (activiationFunction == TrainingSetings.ActiviationFunction.JUMP)
-            {
-                result = activatonFunctions.jumpActivationFuntion(result);
-            }
-            else
-            {
-                result = activatonFunctions.sigmoidActivationFunction(result);
-                result = activatonFunctions.correctionForSigmoid(result);
-            }
-
-            return new PointInfo(x, y, result);
+            return new PointInfo(x, y, xorTrResult.oNeuron.output());
         }
 
         public PointInfo preparePoint(TrainingResultP trainingResult, float x, float y, TrainingSetings.ActiviationFunction activiationFunction)

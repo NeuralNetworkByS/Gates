@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Gates
 
         private TrainingSetings trainingSetings = new TrainingSetings();
         private TrainingResultP trainingResult;
-        private TrainingResultMP trainingResultMP;
+        private XorTrResult xorTrResult;
         private ChartVisualization chartVisualization = new ChartVisualization();
 
         public Form1()
@@ -165,15 +166,19 @@ namespace Gates
 
         private void TrainingStartButton_Click(object sender, EventArgs e)
         {
+            Debug.WriteLine("Click");
             try
             {
                 trainingSetings.learningRate = float.Parse(LearningRateTB.Text, CultureInfo.InvariantCulture);
                 trainingSetings.maxError = float.Parse(MaxErrorTB.Text, CultureInfo.InvariantCulture);
 
+                Debug.WriteLine("Jestem w try");
+
                 if (trainingSetings.gateType == TrainingSetings.GateType.XOR)
                 {
-                    trainingResultMP = trainingService.trainXOR(trainingSetings, gateTrValuesContainer);
-                    showTrainingRaport(trainingResultMP.raport);
+                    Debug.WriteLine("Xor training in Form1");
+                    xorTrResult = trainingService.trainXOR(trainingSetings, gateTrValuesContainer);
+                    showTrainingRaport(xorTrResult.raport);
                 }
                 else
                 {
@@ -212,7 +217,7 @@ namespace Gates
         {
             if (trainingSetings.gateType == TrainingSetings.GateType.XOR)
             {
-                chartVisualization.showChartForXor(trainingResultMP, trainingSetings);
+                chartVisualization.showChartForXor(xorTrResult, trainingSetings);
             }
             else
             {

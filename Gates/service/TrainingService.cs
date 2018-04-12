@@ -18,7 +18,6 @@ namespace Gates.service
 
         private StringBuilder firstLineBuilder;
         private TrainingResultP tResult;
-        private TrainingResultMP tResultMP;
 
         private ActivatonFunctions activationFunctions = new ActivatonFunctions();
 
@@ -50,7 +49,7 @@ namespace Gates.service
             return tResult;
         }
 
-        public TrainingResultMP trainXOR(TrainingSetings settings, GateTrainingValuesContainer valuesContainer)
+        public XorTrResult trainXOR(TrainingSetings settings, GateTrainingValuesContainer valuesContainer)
         {
             this.trainingSetings = settings;
             this.valuesContainer = valuesContainer;
@@ -59,22 +58,10 @@ namespace Gates.service
             firstLineBuilder.Append("Trenowanie: ");
             firstLineBuilder.Append(" bramka: " + trainingSetings.gateType.ToString() + ", ");
 
-            switch (settings.activiationFunction)
-            {
-                case TrainingSetings.ActiviationFunction.JUMP:
-                    firstLineBuilder.Append(" funkcja skokowa, ");
-                    trainByJumpFunction();
-                    break;
-                case TrainingSetings.ActiviationFunction.SIGMOID:
-                    firstLineBuilder.Append(" funkcja sigmoidowa, ");
-                    trainBySigmoidFunction();
-                    break;
-                default:
-                    throw new ArgumentException("Brak wybranej fukcji");
-            }
 
+            XorTrResult xorTrResult = trainByTwoNeuronsBySigmoid();
 
-            return tResultMP;
+            return xorTrResult;
         }
 
         private void trainByJumpFunction()
@@ -115,7 +102,7 @@ namespace Gates.service
 
         private void trainByJumpFunctionAndTwoNeuron()
         {
-            trainByTwoNeuronsByJump(activationFunctions.jumpActivationFuntion);
+            //trainByTwoNeuronsByJump(activationFunctions.jumpActivationFuntion);
         }
 
         private void trainBySigmoidFunctionAndOneNeuron()
@@ -125,7 +112,7 @@ namespace Gates.service
 
         private void trainBySigmoidFunctionAndTwoNeuron()
         {
-            trainByTwoNeuronsBySigmoid(activationFunctions.sigmoidActivationFunction);
+            trainByTwoNeuronsBySigmoid();
         }
 
         private void trainByOneNeuron(ActivatonFunctions.Del activationFunction)
@@ -215,261 +202,87 @@ namespace Gates.service
             tResult.raport.Add("Liczba epok: " + epochs);
         }
 
-        private void trainByTwoNeuronsBySigmoid(ActivatonFunctions.Del activationFuncation)
+        private XorTrResult trainByTwoNeuronsBySigmoid()
         {
-            firstLineBuilder.Append(" dwa neurony.");
-            //throw new NotImplementedException("Not implemented");
-
-            if (trainingSetings.gateType != TrainingSetings.GateType.XOR)
+            Debug.WriteLine("Działa");
+            float[,] inputs =
             {
-                throw new NotImplementedException("Brak możliwość trenowania z wykorzystaniem 2 neuronów tylko bramki xor");
-            }
+                { 0, 0},
+                { 0, 1},
+                { 1, 0},
+                { 1, 1}
+            };
 
-            
+            float[] results = { 0, 1, 1, 0 };
 
-            tResultMP = new TrainingResultMP();
-            tResultMP.initialize();
+            Neuron hiddenNeuron1 = new Neuron();
+            Neuron hiddenNeuron2 = new Neuron();
+            Neuron outputNeuron = new Neuron();
+            List<String> raport = new List<String>();
 
-            firstLineBuilder.Append(" sieć.");
-            tResultMP.raport.Add(firstLineBuilder.ToString());
-
-            tResultMP.raport.Add("Początkowe w1: " + tResultMP.w1);
-            tResultMP.raport.Add("Początkowe w2: " + tResultMP.w2);
-            tResultMP.raport.Add("Początkowe w3: " + tResultMP.w3);
-            tResultMP.raport.Add("Początkowe w4: " + tResultMP.w4);
-
-            tResultMP.raport.Add("Początkowe wh1: " + tResultMP.wh1);
-            tResultMP.raport.Add("Początkowe w4: " + tResultMP.wh2);
-
-            tResultMP.raport.Add("Początkowy biasI: " + tResultMP.biasI);
-            tResultMP.raport.Add("Początkowy biasI2: " + tResultMP.biasI2);
-            tResultMP.raport.Add("Początkowy biasO: " + tResultMP.biasO);
-
-
+            hiddenNeuron1.randomizeWeights();
+            raport.Add("Inicjalizacja: ");
+            raport.Add("hiddenNeuron1.weights[0]: " + hiddenNeuron1.weights[0]);
+            raport.Add("hiddenNeuron1.weights[1]: " + hiddenNeuron1.weights[1]);
+            hiddenNeuron2.randomizeWeights();
+            raport.Add("hiddenNeuron2.weights[0]: " + hiddenNeuron2.weights[0]);
+            raport.Add("hiddenNeuron2.weights[1]: " + hiddenNeuron2.weights[1]);
+            outputNeuron.randomizeWeights();
+            raport.Add("outputNeuron.weights[0]: " + outputNeuron.weights[0]);
+            raport.Add("outputNeuron.weights[1]: " + outputNeuron.weights[1]);
 
             bool isChanged = true;
 
-            float gradientOutput = 0.00f;
-            float gradientH1 = 0.00f;
-            float gradientH2 = 0.00f;
-            float output = 0.00f;
-
             int epochs = 0;
-
             while (isChanged)
             {
                 isChanged = false;
 
-                for (int i = 0; i < valuesContainer.results.Count; i++)
+                for (int i = 0; i < 4; i++)
                 {
-                    Debug.WriteLine("");
-                    Debug.WriteLine("x1: {0}, x2: {1}, d: {2}", valuesContainer.x1Values[i], valuesContainer.x2Values[i], valuesContainer.results[trainingSetings.gateType.ToString()][i]);
+                    // 1) forward propagation (calculates output)
+                    hiddenNeuron1.inputs = new float[] { inputs[i, 0], inputs[i, 1] };
+                    hiddenNeuron2.inputs = new float[] { inputs[i, 0], inputs[i, 1] };
 
-                    tResultMP.h1 =
-                    activationFuncation(tResultMP.w1 * valuesContainer.x1Values[i] + tResultMP.w3 * valuesContainer.x2Values[i] + tResultMP.biasI);
+                    outputNeuron.inputs = new float[] { hiddenNeuron1.output(), hiddenNeuron2.output() };
+                    float result = outputNeuron.output();
+                    Debug.WriteLine("{0} xor {1} = {2}", inputs[i, 0], inputs[i, 1], result);
 
-                    tResultMP.h2 =
-                    activationFuncation(tResultMP.w2 * valuesContainer.x1Values[i] + tResultMP.w4 * valuesContainer.x2Values[i] + tResultMP.biasI2);
+                    // 2) back propagation (adjusts weights)
 
-                    output = tResultMP.h1 * tResultMP.wh1 + tResultMP.h2 * tResultMP.wh2 + tResultMP.biasO;
-                    Debug.WriteLine("Output przed aktywacją: " + output);
-                    output = activationFuncation(output);
-                    output = activationFunctions.correctionForSigmoid(output);
-                    Debug.WriteLine("Output po aktywacji: " + output);
+                    // adjusts the weight of the output neuron, based on its error
 
-                    Debug.WriteLine("Oczekiwana wartość: " + valuesContainer.results[trainingSetings.gateType.ToString()][i]);
+                    result = activationFunctions.correctionForSigmoid(result);
+                    Debug.WriteLine("output po korekcji: " + result);
 
-
-                    if (output != valuesContainer.results[trainingSetings.gateType.ToString()][i])
+                    if (result != results[i])
                     {
-                        tResultMP.raport.Add("");
-                        tResultMP.raport.Add("Zmiana wag: " + tResultMP.w1);
-                        tResultMP.raport.Add("output: " + output + ", desired: " + valuesContainer.results[trainingSetings.gateType.ToString()][i] + ".");
-                        Debug.WriteLine("Zmiana wag itp");
                         isChanged = true;
 
-                        gradientOutput = (valuesContainer.results[trainingSetings.gateType.ToString()][i] - output) * output * (1.00f - output);
-                        Debug.WriteLine("gradientOtput: " + gradientOutput);
-                        gradientH1 = gradientOutput * tResultMP.wh1 * tResultMP.h1 * (1.00f - tResultMP.h1);
-                        gradientH2 = gradientOutput * tResultMP.wh2 * tResultMP.h2 * (1.00f - tResultMP.h2);
+                        outputNeuron.error = Sigmoid.derivative(outputNeuron.output()) * (results[i] - outputNeuron.output());
+                        outputNeuron.adjustWeights(trainingSetings.learningRate);
 
-                        tResultMP.biasO += trainingSetings.learningRate * gradientOutput;
-                        Debug.WriteLine("trainingSetings.learningRate * gradientOutput: " + trainingSetings.learningRate * gradientOutput);
-                        tResultMP.wh1 += trainingSetings.learningRate * gradientOutput * tResultMP.h1;
-                        tResultMP.wh2 += trainingSetings.learningRate * gradientOutput * tResultMP.h2;
+                        // then adjusts the hidden neurons' weights, based on their errors
+                        hiddenNeuron1.error = Sigmoid.derivative(hiddenNeuron1.output()) * outputNeuron.error * outputNeuron.weights[0];
+                        hiddenNeuron2.error = Sigmoid.derivative(hiddenNeuron2.output()) * outputNeuron.error * outputNeuron.weights[1];
 
-                        tResultMP.biasI += trainingSetings.learningRate * gradientH1;
-                        tResultMP.w1 += trainingSetings.learningRate * gradientH1 * valuesContainer.x1Values[i];
-                        tResultMP.w3 += trainingSetings.learningRate * gradientH1 * valuesContainer.x1Values[i];
+                        hiddenNeuron1.adjustWeights(trainingSetings.learningRate);
+                        hiddenNeuron2.adjustWeights(trainingSetings.learningRate);
 
-                        tResultMP.biasI2 += trainingSetings.learningRate * gradientH2;
-                        tResultMP.w2 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
-                        tResultMP.w4 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
-
-                        Debug.WriteLine("biasO: " + tResultMP.biasO);
-                        Debug.WriteLine("wh1: " + tResultMP.wh1);
-                        Debug.WriteLine("wh2: " + tResultMP.wh2);
-
-                        Debug.WriteLine("biasI: " + tResultMP.biasI);
-                        Debug.WriteLine("w1: " + tResultMP.w1);
-                        Debug.WriteLine("w2: " + tResultMP.w2);
-
-                        Debug.WriteLine("biasI2: " + tResultMP.biasI2);
-                        Debug.WriteLine("w2: " + tResultMP.w2);
-                        Debug.WriteLine("w4: " + tResultMP.w4);
-
-                        tResultMP.raport.Add("w1: " + tResultMP.w1);
-                        tResultMP.raport.Add("w2: " + tResultMP.w2);
-                        tResultMP.raport.Add("w3: " + tResultMP.w3);
-                        tResultMP.raport.Add("w4: " + tResultMP.w4);
-
-                        tResultMP.raport.Add("wh1: " + tResultMP.wh1);
-                        tResultMP.raport.Add("wh2: " + tResultMP.wh2);
-
-                        tResultMP.raport.Add("biasI: " + tResultMP.biasI);
-                        tResultMP.raport.Add("biasI2: " + tResultMP.biasI2);
-                        tResultMP.raport.Add("biasO: " + tResultMP.biasO);
-
-
+                        raport.Add("Zmiana wag: ");
+                        raport.Add("hiddenNeuron1.weights[0]: " + hiddenNeuron1.weights[0]);
+                        raport.Add("hiddenNeuron1.weights[1]: " + hiddenNeuron1.weights[1]);
+                        raport.Add("hiddenNeuron2.weights[0]: " + hiddenNeuron2.weights[0]);
+                        raport.Add("hiddenNeuron2.weights[1]: " + hiddenNeuron2.weights[1]);
+                        raport.Add("outputNeuron.weights[0]: " + outputNeuron.weights[0]);
+                        raport.Add("outputNeuron.weights[1]: " + outputNeuron.weights[1]);
                     }
-
                 }
-
                 epochs++;
             }
 
-            tResultMP.raport.Add("Epochs: " + epochs + ".");
-            Debug.WriteLine("Trening Zakończony");
-
+            raport.Add("Ilość epochs: " + epochs);
+            return new XorTrResult(hiddenNeuron1, hiddenNeuron2, outputNeuron, raport);
         }
-
-
-        private void trainByTwoNeuronsByJump(ActivatonFunctions.Del activationFuncation)
-        {
-            firstLineBuilder.Append(" dwa neurony.");
-            //throw new NotImplementedException("Not implemented");
-
-            if (trainingSetings.gateType != TrainingSetings.GateType.XOR)
-            {
-                throw new NotImplementedException("Brak możliwość trenowania z wykorzystaniem 2 neuronów tylko bramki xor");
-            }
-
-
-
-            tResultMP = new TrainingResultMP();
-            tResultMP.initialize();
-
-            firstLineBuilder.Append(" sieć.");
-            tResultMP.raport.Add(firstLineBuilder.ToString());
-
-            tResultMP.raport.Add("Początkowe w1: " + tResultMP.w1);
-            tResultMP.raport.Add("Początkowe w2: " + tResultMP.w2);
-            tResultMP.raport.Add("Początkowe w3: " + tResultMP.w3);
-            tResultMP.raport.Add("Początkowe w4: " + tResultMP.w4);
-
-            tResultMP.raport.Add("Początkowe wh1: " + tResultMP.wh1);
-            tResultMP.raport.Add("Początkowe w4: " + tResultMP.wh2);
-
-            tResultMP.raport.Add("Początkowy biasI: " + tResultMP.biasI);
-            tResultMP.raport.Add("Początkowy biasI2: " + tResultMP.biasI2);
-            tResultMP.raport.Add("Początkowy biasO: " + tResultMP.biasO);
-
-
-
-            bool isChanged = true;
-
-            float gradientOutput = 0.00f;
-            float gradientH1 = 0.00f;
-            float gradientH2 = 0.00f;
-            float output = 0.00f;
-
-            int epochs = 0;
-
-            while (isChanged)
-            {
-                isChanged = false;
-
-                for (int i = 0; i < valuesContainer.results.Count; i++)
-                {
-                    Debug.WriteLine("");
-                    Debug.WriteLine("x1: {0}, x2: {1}, d: {2}", valuesContainer.x1Values[i], valuesContainer.x2Values[i], valuesContainer.results[trainingSetings.gateType.ToString()][i]);
-
-                    tResultMP.h1 =
-                    activationFuncation(tResultMP.w1 * valuesContainer.x1Values[i] + tResultMP.w3 * valuesContainer.x2Values[i] + tResultMP.biasI);
-
-                    tResultMP.h2 =
-                    activationFuncation(tResultMP.w2 * valuesContainer.x1Values[i] + tResultMP.w4 * valuesContainer.x2Values[i] + tResultMP.biasI2);
-
-                    output = tResultMP.h1 * tResultMP.wh1 + tResultMP.h2 * tResultMP.wh2 + tResultMP.biasO;
-                    Debug.WriteLine("Output przed aktywacją: " + output);
-                    output = activationFuncation(output);
-                    Debug.WriteLine("Output po aktywacji: " + output);
-
-                    Debug.WriteLine("Oczekiwana wartość: " + valuesContainer.results[trainingSetings.gateType.ToString()][i]);
-
-
-                    if (output != valuesContainer.results[trainingSetings.gateType.ToString()][i])
-                    {
-                        tResultMP.raport.Add("");
-                        tResultMP.raport.Add("Zmiana wag: " + tResultMP.w1);
-                        tResultMP.raport.Add("output: " + output + ", desired: " + valuesContainer.results[trainingSetings.gateType.ToString()][i] + ".");
-                        Debug.WriteLine("Zmiana wag itp");
-                        isChanged = true;
-
-                        gradientOutput = (valuesContainer.results[trainingSetings.gateType.ToString()][i] - output);
-                        Debug.WriteLine("gradientOtput: " + gradientOutput);
-                        gradientH1 = gradientOutput * tResultMP.wh1;
-                        gradientH2 = gradientOutput * tResultMP.wh2;
-
-                        tResultMP.biasO += trainingSetings.learningRate * gradientOutput;
-                        Debug.WriteLine("trainingSetings.learningRate * gradientOutput: " + trainingSetings.learningRate * gradientOutput);
-                        tResultMP.wh1 += trainingSetings.learningRate * gradientOutput * tResultMP.h1;
-                        tResultMP.wh2 += trainingSetings.learningRate * gradientOutput * tResultMP.h2;
-
-                        tResultMP.biasI += trainingSetings.learningRate * gradientH1;
-                        tResultMP.w1 += trainingSetings.learningRate * gradientH1 * valuesContainer.x1Values[i];
-                        tResultMP.w3 += trainingSetings.learningRate * gradientH1 * valuesContainer.x1Values[i];
-
-                        tResultMP.biasI2 += trainingSetings.learningRate * gradientH2;
-                        tResultMP.w2 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
-                        tResultMP.w4 += trainingSetings.learningRate * gradientH2 * valuesContainer.x2Values[i];
-
-                        Debug.WriteLine("biasO: " + tResultMP.biasO);
-                        Debug.WriteLine("wh1: " + tResultMP.wh1);
-                        Debug.WriteLine("wh2: " + tResultMP.wh2);
-
-                        Debug.WriteLine("biasI: " + tResultMP.biasI);
-                        Debug.WriteLine("w1: " + tResultMP.w1);
-                        Debug.WriteLine("w2: " + tResultMP.w2);
-
-                        Debug.WriteLine("biasI2: " + tResultMP.biasI2);
-                        Debug.WriteLine("w2: " + tResultMP.w2);
-                        Debug.WriteLine("w4: " + tResultMP.w4);
-
-                        tResultMP.raport.Add("w1: " + tResultMP.w1);
-                        tResultMP.raport.Add("w2: " + tResultMP.w2);
-                        tResultMP.raport.Add("w3: " + tResultMP.w3);
-                        tResultMP.raport.Add("w4: " + tResultMP.w4);
-
-                        tResultMP.raport.Add("wh1: " + tResultMP.wh1);
-                        tResultMP.raport.Add("wh2: " + tResultMP.wh2);
-
-                        tResultMP.raport.Add("biasI: " + tResultMP.biasI);
-                        tResultMP.raport.Add("biasI2: " + tResultMP.biasI2);
-                        tResultMP.raport.Add("biasO: " + tResultMP.biasO);
-
-
-                    }
-
-                }
-
-                epochs++;
-            }
-
-            tResultMP.raport.Add("Epochs: " + epochs + ".");
-            Debug.WriteLine("Trening Zakończony");
-
-        }
-
     }
 }
