@@ -28,6 +28,11 @@ namespace Gates.service
         {
             float result = 1.00f / (1.00f + ((float)Math.Pow(Math.E, -x)));
 
+            return result;
+        }
+
+        public float correctionForSigmoid(float result)
+        {
             float errorUp = 1.00f - result;
 
             if (result <= maxError)

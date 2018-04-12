@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -22,7 +23,8 @@ namespace Gates
         private TrainingService trainingService = new TrainingService();
 
         private TrainingSetings trainingSetings = new TrainingSetings();
-        private TrainingResult trainingResult;
+        private TrainingResultP trainingResult;
+        private XorTrResult xorTrResult;
         private ChartVisualization chartVisualization = new ChartVisualization();
 
         public Form1()
@@ -164,12 +166,27 @@ namespace Gates
 
         private void TrainingStartButton_Click(object sender, EventArgs e)
         {
+            Debug.WriteLine("Click");
             try
             {
                 trainingSetings.learningRate = float.Parse(LearningRateTB.Text, CultureInfo.InvariantCulture);
                 trainingSetings.maxError = float.Parse(MaxErrorTB.Text, CultureInfo.InvariantCulture);
-                trainingResult = trainingService.train(trainingSetings, gateTrValuesContainer);
-                showTrainingRaport(trainingResult.raport);
+
+                Debug.WriteLine("Jestem w try");
+
+                if (trainingSetings.gateType == TrainingSetings.GateType.XOR)
+                {
+                    Debug.WriteLine("Xor training in Form1");
+                    xorTrResult = trainingService.trainXOR(trainingSetings, gateTrValuesContainer);
+                    showTrainingRaport(xorTrResult.raport);
+                }
+                else
+                {
+                    trainingResult = trainingService.train(trainingSetings, gateTrValuesContainer);
+                    showTrainingRaport(trainingResult.raport);
+                }
+
+                
             }
             catch (NotImplementedException exception)
             {
@@ -198,7 +215,15 @@ namespace Gates
 
         private void ChartButton_Click(object sender, EventArgs e)
         {
-            chartVisualization.showChart(trainingResult, trainingSetings);
+            if (trainingSetings.gateType == TrainingSetings.GateType.XOR)
+            {
+                chartVisualization.showChartForXor(xorTrResult, trainingSetings);
+            }
+            else
+            {
+                chartVisualization.showChart(trainingResult, trainingSetings);
+            }
+            
         }
     }
 }

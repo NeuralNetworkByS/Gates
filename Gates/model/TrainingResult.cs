@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 
 namespace Gates.model
 {
-    public class TrainingResult
+    public class TrainingResultP
     {
         public float w1 = 0.00f;
         public float w2 = 0.00f;
-        public float bias = 1;
+        public float biasI = 1.00f;
 
         public List<String> raport = new List<String>();
+
+        public virtual void initialize()
+        {
+
+        }
     }
 }
